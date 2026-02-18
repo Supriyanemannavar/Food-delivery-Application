@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpSession;
 import com.tap.dao.UserDAO;
 import com.tap.daoimpl.UserDAOImpl;
 import com.tap.model.User;
+import com.tap.utility.PasswordUtil;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -24,10 +25,10 @@ public class LoginServlet extends HttpServlet {
 
         UserDAO userDAO = new UserDAOImpl();
         
-        // fetch user
-        User user = userDAO.getUserByUsernameAndPassword(username, password);
+        // fetch by username and verify hashed password
+        User user = userDAO.getUserByUsername(username);
 
-        if (user != null) {
+        if (user != null && PasswordUtil.verifyPassword(password, user.getPassword())) {
             HttpSession session = request.getSession();
             session.setAttribute("username", user.getUsername());   // store username in session
             session.setAttribute("userId", user.getUserId());       // store id if needed

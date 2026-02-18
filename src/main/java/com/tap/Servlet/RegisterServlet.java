@@ -8,6 +8,7 @@ import jakarta.servlet.http.*;
 import com.tap.dao.UserDAO;
 import com.tap.daoimpl.UserDAOImpl;
 import com.tap.model.User;
+import com.tap.utility.PasswordUtil;
 
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
@@ -34,7 +35,7 @@ public class RegisterServlet extends HttpServlet {
         User user = new User();
         user.setName(name);
         user.setUsername(username);
-        user.setPassword(password);
+        user.setPassword(PasswordUtil.hashPassword(password));
         user.setEmail(email);
         user.setAddress(address);
 
