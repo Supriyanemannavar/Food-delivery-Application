@@ -4,6 +4,7 @@ import java.sql.*;
 import com.tap.dao.UserDAO;
 import com.tap.model.User;
 import com.tap.utility.DBConnection;
+import com.tap.utility.PasswordUtil;
 
 public class UserDAOImpl implements UserDAO {
 
@@ -58,29 +59,10 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User getUserByUsernameAndPassword(String username, String password) {
-        String sql = "SELECT * FROM user WHERE username=? AND password=?";
-
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, username);
-            ps.setString(2, password);
-
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                User user = new User();
-                user.setUserId(rs.getInt("userid"));
-                user.setName(rs.getString("name"));
-                user.setUsername(rs.getString("username"));
-                user.setPassword(rs.getString("password"));
-                user.setEmail(rs.getString("email"));
-                user.setAddress(rs.getString("address"));
-                user.setRole(rs.getString("role"));
-                return user;
-            }
-
-        } catch (Exception e) { e.printStackTrace(); }
-
+        User user = getUserByUsername(username);
+        if (user != null && PasswordUtil.verifyPassword(password, user.getPassword())) {
+            return user;
+        }
         return null;
     }
 }
